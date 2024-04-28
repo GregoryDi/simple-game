@@ -10,6 +10,7 @@ TODO:
 6. Add auto tests
 7. Update UX/UI
 8. Make more efficient wrapper for socket
+9. Make some envs props for prod, stage, test
 
 Start app
 Frontend - npm install && npm run dev
