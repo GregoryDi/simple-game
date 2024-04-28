@@ -5,11 +5,8 @@ import {
     MessageBody,
     WebSocketGateway,
     WebSocketServer,
-    OnGatewayConnection,
-    OnGatewayDisconnect,
-    ConnectedSocket,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 
 @WebSocketGateway({
     cors: {
@@ -17,20 +14,12 @@ import { Server, Socket } from 'socket.io';
     },
     transport: ['websocket'],
 })
-export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class EventsGateway {
     private readonly logger = new Logger(EventsGateway.name);
     constructor(private readonly gameService: GameService) {}
 
     @WebSocketServer()
     server: Server;
-
-    handleConnection() {
-        console.log('USER CONNECTED');
-    }
-
-    handleDisconnect() {
-        console.log('USER dicconnect');
-    }
 
     @SubscribeMessage('openCell')
     openCell(@MessageBody() data: any) {

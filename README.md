@@ -11,6 +11,7 @@ TODO:
 7. Update UX/UI
 8. Make more efficient wrapper for socket
 9. Make some envs props for prod, stage, test
+10. Delete some unnecessary files 
 
 Start app
 Frontend - npm install && npm run dev

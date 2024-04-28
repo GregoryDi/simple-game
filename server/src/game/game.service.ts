@@ -10,13 +10,15 @@ export class GameService {
 
     startNewGame(n: number, m: number): GameInterface {
         this.currentGame = new Game(n, m);
-        const game = { ...this.currentGame };
-        delete game.field;
-        return game;
+        return this.getGame();
     }
 
     openCell(i: number, j: number): GameInterface {
         this.currentGame.openCell(i, j);
+        return this.getGame();
+    }
+
+    getGame() {
         const game = { ...this.currentGame };
         delete game.field;
         return game;

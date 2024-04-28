@@ -34,13 +34,12 @@ export class Game implements GameInterface {
             }
         }
 
-        // Fill field with diamonds - 'X' If random chose existing X, try while
+        // Fill field with diamonds - 'X' If random choose existing X, try while
         for (let i = 0; i < this.diamondsCount; i++) {
             let x = rand();
             let y = rand();
             let cell = this.field[x][y];
             if (cell === 'X') {
-                console.log(x, y);
                 let saveCounter = n * n;
                 while (cell === 'X' && saveCounter > 0) {
                     x = rand();
@@ -86,7 +85,7 @@ export class Game implements GameInterface {
                 cbCheck(i + 1, j - 1 + z, this.field[i + 1][j - 1 + z]);
         }
     }
-
+    //TODO: refactor this method somehow, it looks not good for reading
     openCell(x: number, y: number) {
         if (Boolean(this.openField[x][y].trim())) {
             return;
@@ -140,7 +139,7 @@ export class Game implements GameInterface {
                     i,
                     j,
                     checkFor: [...Array(10).keys()].map((el) => el.toString()),
-                    cbCheck: (i, j, value) => {
+                    cbCheck: (i: number, j: number, value: string) => {
                         if (!coordsToCheck.get(`${i},${j}`) && value === '0') {
                             coordsToCheck.set(`${i},${j}`, {
                                 i,
