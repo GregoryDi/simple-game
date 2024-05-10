@@ -1,22 +1,52 @@
 <template>
-    <div class="row">
-        <div class="row" v-if="gameState.status === 'ended'">
-            <h1 v-if="gameState.playerOneScore > gameState.playerTwoScore">
-                Победил игрок 1
-            </h1>
-            <h1 v-else>Победил игрок 2</h1>
+    <div class="container">
+        <div class="stats container">
+            <div v-if="gameState.status === 'ended'">
+                <h1 v-if="gameState.playerOneScore > gameState.playerTwoScore">
+                    Победил игрок 1
+                </h1>
+                <h1 v-else>Победил игрок 2</h1>
+            </div>
+            <div v-if="gameState.status === 'started'">
+                <h2>Статистика</h2>
+
+                <p>
+                    Cчет 1 ого игрока:
+                    <span id="mines" class="badge bg-danger">
+                        {{ gameState.playerOneScore }}</span
+                    >
+                </p>
+                <p>
+                    Cчет 2 ого игрока:
+                    <span id="mines" class="badge bg-danger">
+                        {{ gameState.playerTwoScore }}</span
+                    >
+                </p>
+                <div class="row mt-3">
+                    <h4>
+                        <span id="moves" class="badge bg-primary">
+                            {{ mapping(gameState.status) }}. Ход
+                            {{ mapping(gameState.currentPlayer) }}</span
+                        >
+                    </h4>
+                </div>
+            </div>
         </div>
-        <div class="col-md-12">
-            <div class="row mt-3">
-                Статус игры - {{ mapping(gameState.status) }}. Ход
-                {{ mapping(gameState.currentPlayer) }}
-            </div>
-            <div class="row mt-3" v-if="gameState.status !== 'ready'">
-                Cчет 1 ого игрока {{ gameState.playerOneScore }}
-            </div>
-            <div class="row mt-3" v-if="gameState.status !== 'ready'">
-                Cчет 2 ого игрока {{ gameState.playerTwoScore }}
-            </div>
+        <div class="board container">
+            <div class="row mt-3"></div>
+            <table class="table">
+                <tbody>
+                    <tr v-for="(row, i) in gameState.openField">
+                        <td
+                            v-for="(el, j) in row"
+                            class="cell"
+                            @click="sendCell(i, j)"
+                        >
+                            {{ el ? el : ' ' }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         <div class="row mt-3">
             <div class="col-md-12 text-center">
@@ -25,20 +55,6 @@
                 </button>
             </div>
         </div>
-        <div class="row mt-3"></div>
-        <table class="table">
-            <tbody>
-                <tr v-for="(row, i) in gameState.openField">
-                    <td
-                        v-for="(el, j) in row"
-                        class="cell"
-                        @click="sendCell(i, j)"
-                    >
-                        {{ el ? el : ' ' }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
     </div>
 </template>
 
@@ -51,7 +67,6 @@ export default defineComponent({
     data: (): {
         socket: null | Socket;
         n: number;
-        m: number;
         message: string;
         messages: [];
         gameState: {
@@ -66,7 +81,6 @@ export default defineComponent({
     } => ({
         socket: null,
         n: 6,
-        m: 6,
         message: '',
         messages: [],
         gameState: {
@@ -98,7 +112,7 @@ export default defineComponent({
         async startNewGame() {
             const res = await axios.post(
                 'http://localhost:3030/start-new-game',
-                { n: this.n, m: this.m },
+                { n: this.n, m: this.n },
                 {
                     headers: {
                         'Access-Control-Allow-Origin': '*',
@@ -132,11 +146,12 @@ export default defineComponent({
 <style scoped>
 .cell {
     background-color: white;
-    border: 1rem solid;
+    border: 0.5rem solid #0dcaf0;
     text-align: center;
-    font-size: 20px;
-    font-weight: 900;
-    width: 100px;
+    font-size: 32px;
+    font-weight: 500;
+    min-width: 100px;
     height: 100px;
+    vertical-align: middle;
 }
 </style>

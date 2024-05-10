@@ -1,14 +1,4 @@
-export interface GameInterface {
-    status: string; //'started' | 'ended';
-    diamondsCount: number;
-    n: number;
-    field: string[][];
-    openField: string[][];
-    currentPlayer: string; // 'playerOneScore' | 'playerTwoScore';
-    playerOneScore: number;
-    playerTwoScore: number;
-    openCell(x: number, y: number): void;
-}
+import { GameInterface } from './game.types';
 
 export class Game implements GameInterface {
     status = 'started';
@@ -68,77 +58,52 @@ export class Game implements GameInterface {
     }
 
     _checkAroundThePoint({ i, j, checkFor, cbCheck }) {
-        for (let z = 0; z < 3; z++) {
-            if (
-                checkFor.includes(
-                    this.field[i - 1] && this.field[i - 1][j - 1 + z]
-                )
-            )
-                cbCheck(i - 1, j - 1 + z, this.field[i - 1][j - 1 + z]);
-            if (checkFor.includes(this.field[i] && this.field[i][j - 1 + z]))
-                cbCheck(i, j - 1 + z, this.field[i][j - 1 + z]);
-            if (
-                checkFor.includes(
-                    this.field[i + 1] && this.field[i + 1][j - 1 + z]
-                )
-            )
-                cbCheck(i + 1, j - 1 + z, this.field[i + 1][j - 1 + z]);
+        for (let y = 0; y < 3; y++) {
+            for (let z = 0; z < 3; z++) {
+                const row = i - 1 + y;
+                const col = j - 1 + z;
+                const value = this.field[row] && this.field[row][col];
+                if (checkFor.includes(value)) cbCheck(row, col, value);
+            }
         }
     }
-    //TODO: refactor this method somehow, it looks not good for reading
+
     openCell(x: number, y: number) {
+        if (x < 0 || y < 0 || x >= this.n || y >= this.n)
+            throw new Error('Invalid cords');
+        // check for already opened cell
         if (Boolean(this.openField[x][y].trim())) {
             return;
         }
-        if (x < 0 || y < 0 || x >= this.n || y >= this.n)
-            throw new Error('Invalid cords');
 
+        this.openField[x][y] = this.field[x][y];
+
+        // check for diamond
         if (this.field[x][y] === 'X') {
             this[this.currentPlayer]++;
-            this.openField[x][y] = this.field[x][y];
             this._checkStatus();
             return;
         }
 
+        // check for zero
         if (this.field[x][y] === '0') {
             const coordsToCheck = new Map();
             coordsToCheck.set(`${x},${y}`, { i: x, j: y, checked: false });
+            const getUncheckedCoords = () =>
+                Array.from(coordsToCheck.values()).filter((el) => !el.checked);
 
-            while (
-                Array.from(coordsToCheck.values()).filter((el) => !el.checked)
-                    .length
-            ) {
+            let uncheckedCoords = getUncheckedCoords();
+            while (uncheckedCoords.length) {
                 // get first non checked coords from map
-                const { i, j } = Array.from(coordsToCheck.values()).filter(
-                    (el) => !el.checked
-                )[0];
+                const { i, j } = uncheckedCoords[0];
                 // set coords as checked
-                coordsToCheck.set(`${i},${j}`, {
-                    i,
-                    j,
-                    checked: true,
-                });
-                // check for 0 value and push to Map
-                this._checkAroundThePoint({
-                    i,
-                    j,
-                    checkFor: '0',
-                    cbCheck: (i: number, j: number) => {
-                        if (!coordsToCheck.get(`${i},${j}`)) {
-                            coordsToCheck.set(`${i},${j}`, {
-                                i,
-                                j,
-                                checked: false,
-                            });
-                        }
-                        this.openField[i][j] = this.field[i][j];
-                    },
-                });
+                coordsToCheck.set(`${i},${j}`, { i, j, checked: true });
+
                 // check for non zero and no x value and open
                 this._checkAroundThePoint({
                     i,
                     j,
-                    checkFor: [...Array(10).keys()].map((el) => el.toString()),
+                    checkFor: [...Array(10).keys()].map((el) => el.toString()), // '0'-'9' array
                     cbCheck: (i: number, j: number, value: string) => {
                         if (!coordsToCheck.get(`${i},${j}`) && value === '0') {
                             coordsToCheck.set(`${i},${j}`, {
@@ -150,10 +115,11 @@ export class Game implements GameInterface {
                         this.openField[i][j] = this.field[i][j];
                     },
                 });
+
+                uncheckedCoords = getUncheckedCoords();
             }
         }
 
-        this.openField[x][y] = this.field[x][y];
         this.currentPlayer =
             this.currentPlayer === 'playerOneScore'
                 ? 'playerTwoScore'

@@ -1,5 +1,5 @@
 import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
-import { GameInterface } from './game';
+import { GameInterface } from './game.types';
 import { GameService } from './game.service';
 
 @Controller()
