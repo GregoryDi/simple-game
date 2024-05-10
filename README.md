@@ -1,17 +1,15 @@
-# simple-game - Test task
+# Test task - Reverse minesweeper for two players
 
-# Reverse minesweeper for two players
+#### Starting app
 
-Starting app
-
-Frontend -
+#### Frontend
 
 ```sh
 cd client
 npm install && npm run dev
 ```
 
-Backend -
+#### Backend
 
 ```sh
 cd server
