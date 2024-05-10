@@ -9,3 +9,5 @@ export interface GameInterface {
     playerTwoScore: number;
     openCell(x: number, y: number): void;
 }
+
+export type CallbackCheckFunc = (i: number, j: number, value: string) => void;

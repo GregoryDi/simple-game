@@ -1,4 +1,4 @@
-import { GameInterface } from './game.types';
+import { GameInterface, CallbackCheckFunc } from './game.types';
 
 export class Game implements GameInterface {
     status = 'started';
@@ -57,7 +57,17 @@ export class Game implements GameInterface {
         }
     }
 
-    _checkAroundThePoint({ i, j, checkFor, cbCheck }) {
+    _checkAroundThePoint({
+        i,
+        j,
+        checkFor,
+        cbCheck,
+    }: {
+        i: number;
+        j: number;
+        checkFor: string[];
+        cbCheck: CallbackCheckFunc;
+    }) {
         for (let y = 0; y < 3; y++) {
             for (let z = 0; z < 3; z++) {
                 const row = i - 1 + y;
@@ -104,7 +114,7 @@ export class Game implements GameInterface {
                     i,
                     j,
                     checkFor: [...Array(10).keys()].map((el) => el.toString()), // '0'-'9' array
-                    cbCheck: (i: number, j: number, value: string) => {
+                    cbCheck: (i, j, value) => {
                         if (!coordsToCheck.get(`${i},${j}`) && value === '0') {
                             coordsToCheck.set(`${i},${j}`, {
                                 i,
